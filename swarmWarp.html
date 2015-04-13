@@ -1,0 +1,79 @@
+<html>
+<body>
+<html>
+<body>
+Input:<br>
+<textarea id="input" onClick="this.select()"></textarea>
+<p>
+<button type="button" onclick="decodeEncodeAndAddYears()">Decode & Add years & Encode</button>
+<p>
+Years to add: <input id="years" value="900"></textarea>
+<p>
+<button type="button" onclick="decodeFromInput()">Decode only</button>
+<p>
+Decoded:<br>
+<textarea id="plain"></textarea>
+<p>
+<button type="button" onclick="encodeFromPlain()">Encode</button>
+<p>
+Encoded:<br>
+<textarea id="encoded" onClick="this.select()"></textarea>
+
+<script src="lz-string.js"></script>
+<script>
+
+//Anticheat prefix
+var prefix = window.btoa("Cheater :(\n\n");
+var version;
+
+function decode(save){
+	//Get version from save data
+	version = save.split("|")[0];
+	
+	//Get save from save data
+	var saveData = save.split("|")[1];
+	
+	//Clean prefix from data
+	saveData = saveData.replace(prefix, "");
+	
+	//Decompress saved data	
+	var decompressedData = LZString.decompressFromBase64(saveData);
+		
+	return decompressedData;
+}
+
+function encode(decodedData){
+	var encoded = LZString.compressToBase64(decodedData);
+	encoded = version + "|" + prefix + encoded;
+	return encoded;
+}
+
+function decodeFromInput(){
+	var input = document.getElementById("input").value;
+	document.getElementById("plain").value = decode(input);
+}
+
+function encodeFromPlain(){
+	var plain = document.getElementById("plain").value;
+	document.getElementById("encoded").value = encode(plain);
+}
+
+function addYears(data, years){
+	var currentYear = data.match(/reified.{7}/)[0];
+	currentYear = currentYear.substring(10);	
+	var reifYear = currentYear - years;
+	data = data.replace(/reified.{7}/,'reified":"' + reifYear);
+	return data
+}
+
+function decodeEncodeAndAddYears(){
+	decodeFromInput();
+	var plain = document.getElementById("plain").value;
+	var years = document.getElementById("years").value;
+	document.getElementById("plain").value = addYears(plain, years);
+	encodeFromPlain();
+}
+</script>
+
+</body>
+</html>
